@@ -26,13 +26,12 @@ app.post('/register', (req, res) => {
     bcrypt.hash(password, saltRounds, (err, hash) => {
         if (err) {
             console.log(err)
-        } else {
-            db.query(
-                "INSERT INTO users (username, password) VALUES (?,?)",
-                [ username, hash ], 
-                (err, result) => {
-                    console.log(err);
-                }
+        } 
+        db.query(
+            "INSERT INTO users (username, password) VALUES (?,?)",
+            [ username, hash ], 
+            (err, result) => {
+                console.log(err);
             }
         );
     });
@@ -42,22 +41,25 @@ app.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    db.query("SELECT * FROM users WHERE username = ?",
-        [
-            username, 
-            password
-        ], 
+    db.query(
+        "SELECT * FROM users WHERE username = ?",
+        username, 
         (err, result) => {
             if (err) {
-                res.send({err: 'error bro'})
+                res.send({err: 'error before bcrypt'})
+            } 
+            if (result.length > 0) {
+                bcrypt.compare(password, result[0].password (error, response) => {
+                    if (response) {
+                        res.send(result)
+                    } else {
+                        res.send({ message: "Wrong user/pass combo" })
+                    }
+                })
             } else {
-                if (result.length > 0) {
-                    res.send(result);
-                } else {
-                    res.send({message: "invalid username or password"});
-                }
+                res.send({message: "invalid user"});
             }
-        }
+            }
     );
 });
 
