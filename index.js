@@ -22,7 +22,7 @@ const db = mysql.createConnection({
 app.post('/register', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-
+    
     bcrypt.hash(password, saltRounds, (err, hash) => {
         if (err) {
             console.log(err)
@@ -49,7 +49,7 @@ app.post('/login', (req, res) => {
                 res.send({err: 'error before bcrypt'})
             } 
             if (result.length > 0) {
-                bcrypt.compare(password, result[0].password (error, response) => {
+                bcrypt.compare(password, result[0].password, (error, response) => {
                     if (response) {
                         res.send(result)
                     } else {
@@ -59,7 +59,7 @@ app.post('/login', (req, res) => {
             } else {
                 res.send({message: "invalid user"});
             }
-            }
+        }
     );
 });
 
